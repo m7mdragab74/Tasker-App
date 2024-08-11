@@ -1,5 +1,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tasker/models/db_model.dart';
 
 class DbHelper {
   static final DbHelper _instance = DbHelper.internal();
@@ -7,62 +8,51 @@ class DbHelper {
   DbHelper.internal();
 
   static Database? _db;
-
-  Future<Database> get db async {
-    if (_db == null) {
-      _db = await initalDb();
-      return _db!;
-    } else {
+  Future<Database> createDatabase() async {
+    if (_db != null) {
+      print('Database already exists');
       return _db!;
     }
+    String path = join(await getDatabasesPath(), 'ToDoOne.db');
+    _db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        print('Creating Database and Tables');
+        return db.execute(
+            'CREATE TABLE Tasks1(id INTEGER PRIMARY KEY AUTOINCREMENT, done INTEGER, name TEXT, numberDays TEXT)');
+      },
+    );
+    print('Database Created Successfully');
+    return _db!;
   }
 
-  initalDb() async {
-    String databasepath = await getDatabasesPath();
-    String path = join(databasepath, 'course.db');
-    Database db = await openDatabase(path,
-        onCreate: _onCreate, version: 1, onUpgrade: _onUpgrade);
-    return db;
+  Future<int> insertTask(Task task) async {
+    Database db = await createDatabase();
+    print('Inserting Task: $task');
+    int result = await db.insert('Tasks1', task.toMap());
+    print('Task inserted with id: $result');
+    return result;
   }
 
-  _onUpgrade(Database db, int version, int newVersion) {
-    print('onUpgrade==========================');
+  Future<List<Map<String, dynamic>>> getTasks() async {
+    Database db = await createDatabase();
+    print('Fetching Tasks from the database.');
+    List<Map<String, dynamic>> tasks = await db.query('Tasks1');
+    print('Fetched ${tasks.length} tasks from the database.');
+    return tasks;
   }
 
-  _onCreate(Database db, int version) async {
-    await db.execute('''
-CREATE TABLE "course" (
-  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "content" TEXT NOT NULL,
-  "courseName" TEXT NOT NULL,
-  "hours" INTEGER NOT NULL
-);
-
-''');
-    print('Create Database And Table ==============');
-  }
-
-  readData(String sql) async {
-    Database mydb = await db;
-    List<Map> response = await mydb.rawQuery(sql);
-    return response;
-  }
-
-  insertData(String sql) async {
-    Database mydb = await db;
-    int response = await mydb.rawInsert(sql);
-    return response;
-  }
-
-  updateData(String sql) async {
-    Database mydb = await db;
-    int response = await mydb.rawUpdate(sql);
-    return response;
-  }
-
-  deleteData(String sql) async {
-    Database mydb = await db;
-    int response = await mydb.rawDelete(sql);
-    return response;
+  Future<int> updateTaskDone(int id, int done) async {
+    Database db = await createDatabase();
+    print('Updating Task done with id: $id to $done');
+    int result = await db.update(
+      'Tasks1',
+      {'done': done},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    print('Task done updated successfully. Updated $result record(s).');
+    return result;
   }
 }

@@ -1,33 +1,36 @@
-class Course {
+class Task {
   int? _id;
-  String? _courseName;
-  String? _content;
-  int? _hours;
+  int? _done;
+  String? _name;
+  String? _numberDays;
 
-  Course(dynamic obj) {
-    {
-      _id = obj['id'];
-      _courseName = obj['courseName'];
-      _content = obj['content'];
-      _hours = obj['hours'];
-    }
+  Task(dynamic obj) {
+    _id = obj['id'];
+    _done = obj['done'];
+    _name = obj['name'];
+    _numberDays = obj['numberDays'];
   }
 
-  Course.fromMap(Map<String, dynamic> data) {
-    _id = data['id'];
-    _courseName = data['courseName'];
-    _content = data['content'];
-    _hours = data['hours'];
+  //Method that converts the Task object to a Map
+  toMap() {
+    var map = {
+      'id': _id,
+      'done': _done,
+      'name': _name,
+      'numberDays': _numberDays,
+    };
+    return map;
   }
 
-  Map<String, dynamic> toMap() => {
-        'id': _id,
-        'courseName': _courseName,
-        'content': _content,
-        'hours': _hours
-      };
-  int get id => _id!;
-  String get name => _courseName!;
-  String get content => _content!;
-  int get hours => _hours!;
+  Task.fromMap(Map map) {
+    _id = map['id'];
+    _done = map['done'];
+    _name = map['name'];
+    _numberDays = map['numberDays'];
+  }
+
+  get id => _id;
+  get done => _done;
+  get name => _name;
+  get numberDays => _numberDays;
 }
