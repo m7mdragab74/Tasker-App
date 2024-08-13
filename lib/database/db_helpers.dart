@@ -1,6 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:tasker/models/db_model.dart';
+
+import '../models/db_model.dart';
 
 class DbHelper {
   static final DbHelper _instance = DbHelper.internal();

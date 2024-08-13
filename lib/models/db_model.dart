@@ -11,7 +11,6 @@ class Task {
     _numberDays = obj['numberDays'];
   }
 
-  //Method that converts the Task object to a Map
   toMap() {
     var map = {
       'id': _id,

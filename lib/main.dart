@@ -10,9 +10,9 @@ class TaskerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeView(),
+      home: HomePage(),
     );
   }
 }
